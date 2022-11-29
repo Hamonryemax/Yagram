@@ -1,0 +1,22 @@
+[package]
+name = "yagram-core"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "^4"
+entity = { path = "../entity" }
+migration = { path = "../migration" }
+tracing-subscriber = "^0.3.16"
+
+[dependencies.sea-orm]
+version = "^0.10.4" # sea-orm version
+features = [
+    "debug-print",
+    "runtime-actix-native-tls",
+    "sqlx-postgres",
+    "macros",
+    "mock",
+]
