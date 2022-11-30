@@ -10,6 +10,7 @@ actix-web = "^4"
 entity = { path = "../entity" }
 migration = { path = "../migration" }
 tracing-subscriber = "^0.3.16"
+serde = "^1.0.147"
 
 [dependencies.sea-orm]
 version = "^0.10.4" # sea-orm version

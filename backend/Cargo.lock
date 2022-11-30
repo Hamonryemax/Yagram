@@ -2997,6 +2997,7 @@ dependencies = [
  "entity",
  "migration",
  "sea-orm",
+ "serde",
  "tracing-subscriber",
 ]
 
