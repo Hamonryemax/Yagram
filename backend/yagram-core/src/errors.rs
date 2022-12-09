@@ -1,40 +1,32 @@
-use actix_web::http::StatusCode;
-use actix_web::{error::ResponseError, HttpResponse};
-use derive_more::Display;
-use std::fmt::{Display, Formatter};
+use actix_web::{
+    error::ResponseError,
+    http::{header::ContentType, StatusCode},
+    HttpResponse,
+};
+use serde::Serialize;
+use strum_macros::Display;
 
-#[derive(Debug, Display)]
+#[derive(Debug, Display, Serialize)]
 pub enum ServiceError {
-    #[display(fmt = "Internal server Error")]
     InternalServerError,
-    #[display(fmt = "Bad Request: {}", _0)]
     BadRequest(String),
-    #[display(fmt = "JWKSFetchError")]
-    JWKSFetchError,
-    #[display(fmt = "Not found")]
     NotFound,
+    Unauthorized,
 }
 
 impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
-        match self {
-            ServiceError::InternalServerError => HttpResponse::InternalServerError()
-                .json("Internal Server Error, Please try again later"),
-            ServiceError::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
-            ServiceError::JWKSFetchError => {
-                HttpResponse::InternalServerError().json("Could not fetch JWKS")
-            }
-
-            ServiceError::NotFound => HttpResponse::NotFound().json("Not found"),
-        }
+        HttpResponse::build(self.status_code())
+            .insert_header(ContentType::json())
+            .body(format!("{{ \"message\": \"{}\" }}", self))
     }
 
     fn status_code(&self) -> StatusCode {
         match self {
             ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::BadRequest(_) => StatusCode::BAD_REQUEST,
-            ServiceError::JWKSFetchError => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::NotFound => StatusCode::NOT_FOUND,
+            ServiceError::Unauthorized => StatusCode::UNAUTHORIZED,
         }
     }
 }

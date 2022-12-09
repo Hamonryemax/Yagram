@@ -9,4 +9,5 @@ edition = "2021"
 members = [".", "migration", "entity", "yagram-core"]
 
 [dependencies]
+oauth2 = "4.3.0"
 yagram-core = { path = "yagram-core" }
