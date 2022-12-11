@@ -1,3 +1,5 @@
+pub mod jwt_validation;
+
 use crate::app_state::AppState;
 use actix_session::Session;
 use actix_web::{get, http::header, web, HttpResponse, Responder};
@@ -6,6 +8,8 @@ use oauth2::{
     Scope,
 };
 use serde::Deserialize;
+use std::env;
+use tracing_subscriber::fmt::format;
 
 #[get("/login")]
 pub async fn login(data: web::Data<AppState>, session: Session) -> impl Responder {
@@ -17,12 +21,22 @@ pub async fn login(data: web::Data<AppState>, session: Session) -> impl Responde
         .expect("Failed to write in session");
 
     // Generate the authorization URL to which we'll redirect the user.
-    let (auth_url, _csrf_token) = &data
+    let (auth_url, csrf_token) = &data
         .auth_client
         .authorize_url(CsrfToken::new_random)
-        .add_scope(Scope::new("read_user".to_string()))
+        .add_scope(Scope::new("openid".to_string()))
+        .add_scope(Scope::new("profile".to_string()))
+        .add_scope(Scope::new("email".to_string()))
+        .add_extra_param(
+            "audience",
+            env::var("OAUTH_AUDIENCE").expect("Failed to read OAUTH_AUDIENCE from env"),
+        )
         .set_pkce_challenge(pkce_code_challenge)
         .url();
+
+    session
+        .insert("csrf", csrf_token)
+        .expect("Failed to write in session");
 
     HttpResponse::Found()
         .append_header((header::LOCATION, auth_url.to_string()))
@@ -42,9 +56,18 @@ pub async fn auth(
     session: Session,
 ) -> impl Responder {
     let code = AuthorizationCode::new(params.code.clone());
-    let _state = CsrfToken::new(params.state.clone());
+    let state = CsrfToken::new(params.state.clone());
 
     let pkce_code_verifier = session.get::<PkceCodeVerifier>("state").unwrap().unwrap();
+    let csrf = session.get::<CsrfToken>("csrf").unwrap().unwrap();
+
+    assert_eq!(
+        state.secret(),
+        csrf.secret(),
+        "Invalid csrf was provided\ngot {}\n expected{}",
+        state.secret(),
+        csrf.secret()
+    );
 
     // Exchange the code with a token
     let token = &data

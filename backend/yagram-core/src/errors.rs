@@ -11,7 +11,8 @@ pub enum ServiceError {
     InternalServerError,
     BadRequest(String),
     NotFound,
-    Unauthorized,
+    AuthenticationError,
+    JWKSFetchError,
 }
 
 impl ResponseError for ServiceError {
@@ -23,10 +24,12 @@ impl ResponseError for ServiceError {
 
     fn status_code(&self) -> StatusCode {
         match self {
-            ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            ServiceError::InternalServerError | ServiceError::JWKSFetchError => {
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
             ServiceError::BadRequest(_) => StatusCode::BAD_REQUEST,
             ServiceError::NotFound => StatusCode::NOT_FOUND,
-            ServiceError::Unauthorized => StatusCode::UNAUTHORIZED,
+            ServiceError::AuthenticationError => StatusCode::UNAUTHORIZED,
         }
     }
 }

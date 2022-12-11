@@ -70,8 +70,6 @@ pub async fn start() -> Result<(), std::io::Error> {
         let redis_connection_string =
             env::var("REDIS_CONNECTION").expect("REDIS_CONNECTION in environment variable");
 
-        println!("REDIS ::: {:?}", redis_connection_string);
-
         App::new()
             .wrap(Logger::new("%a %s %{User-Agent}i"))
             .wrap(
@@ -88,7 +86,7 @@ pub async fn start() -> Result<(), std::io::Error> {
             .service(scope("/auth").service(auth::login).service(auth::auth))
             .service(
                 scope("/api")
-                    .wrap(HttpAuthentication::bearer(ok_validator))
+                    .wrap(HttpAuthentication::bearer(auth::jwt_validation::validator))
                     .service(get_user),
             )
     })
