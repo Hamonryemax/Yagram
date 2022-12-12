@@ -1,0 +1,8 @@
+postgres-url = "<POSTGRES_URL>"
+redis-url = "<REDIS_URL>"
+
+[application.oauth]
+domain = "<DOMAIN>"
+client-id = "<CLIENT-ID>"
+client-secret = "<CLIENT-SECRET>"
+audience = "<AUDIENCE>"
