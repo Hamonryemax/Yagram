@@ -8,8 +8,6 @@ use oauth2::{
     Scope,
 };
 use serde::Deserialize;
-use std::env;
-use tracing_subscriber::fmt::format;
 
 #[get("/login")]
 pub async fn login(data: web::Data<AppState>, session: Session) -> impl Responder {
@@ -41,7 +39,7 @@ pub async fn login(data: web::Data<AppState>, session: Session) -> impl Responde
 }
 
 #[derive(Deserialize)]
-struct AuthRequest {
+pub struct AuthRequest {
     code: String,
     state: String,
 }

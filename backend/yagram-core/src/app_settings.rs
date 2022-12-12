@@ -1,11 +1,10 @@
-use actix_settings::{AtError, AtResult, BasicSettings, Settings};
+use actix_settings::{BasicSettings, Settings};
 use serde::Deserialize;
 use std::cmp::{Eq, PartialEq};
 use std::fmt::Debug;
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
-use tracing_subscriber::fmt::format;
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "kebab-case")]

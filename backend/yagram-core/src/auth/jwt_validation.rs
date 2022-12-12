@@ -3,8 +3,6 @@ use crate::errors::ServiceError;
 use actix_web::{dev::ServiceRequest, web, Error};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use alcoholic_jwt::{token_kid, validate, Validation, JWKS};
-use serde::Deserialize;
-use std::env;
 
 async fn fetch_jwks(auth_domain: &String) -> Result<JWKS, Box<dyn std::error::Error>> {
     Ok(

@@ -5,15 +5,12 @@ mod app_state;
 mod auth;
 mod errors;
 
-use actix_session::{storage::RedisActorSessionStore, Session, SessionMiddleware};
-use actix_settings::{ApplySettings as _, Mode, Settings};
+use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
+use actix_settings::ApplySettings as _;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
-use actix_web::{
-    dev::ServiceRequest, get, post, web, web::scope, App, Error, HttpResponse, HttpServer,
-    Responder,
-};
-use actix_web_httpauth::{extractors::bearer::BearerAuth, middleware::HttpAuthentication};
+use actix_web::{get, web, web::scope, App, HttpResponse, HttpServer, Responder};
+use actix_web_httpauth::middleware::HttpAuthentication;
 use app_state::AppState;
 use dotenv::dotenv;
 use entity::prelude::User;
@@ -21,7 +18,6 @@ use entity::user;
 use migration::{Migrator, MigratorTrait};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use sea_orm::entity::prelude::*;
-use std::env;
 
 #[get("/ping")]
 async fn ping() -> impl Responder {
