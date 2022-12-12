@@ -4,6 +4,10 @@ use actix_web::{dev::ServiceRequest, web, Error};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use alcoholic_jwt::{token_kid, validate, Validation, JWKS};
 
+pub struct JWKSFetcher {
+    jwks: Option<JWKS>,
+}
+
 async fn fetch_jwks(auth_domain: &String) -> Result<JWKS, Box<dyn std::error::Error>> {
     Ok(
         reqwest::get(format!("https://{}/.well-known/jwks.json", auth_domain))
@@ -19,34 +23,48 @@ pub async fn validator(
 ) -> Result<ServiceRequest, (Error, ServiceRequest)> {
     let data = req.app_data::<web::Data<AppState>>().unwrap();
     let oauth_domain = &data.settings.oauth.domain;
-    let jwks_result = fetch_jwks(oauth_domain).await;
+    let jwks = &data.jwks_store.jwks;
 
-    match jwks_result {
-        Ok(jwks) => {
-            let token = credentials.token();
+    let token = credentials.token();
 
-            let validations = vec![
-                Validation::Issuer(format!("https://{}/", oauth_domain)),
-                Validation::SubjectPresent,
-            ];
+    let validations = vec![
+        Validation::Issuer(format!("https://{}/", oauth_domain)),
+        Validation::SubjectPresent,
+    ];
 
-            // If a JWKS contains multiple keys, the correct KID first
-            // needs to be fetched from the token headers.
-            let kid = token_kid(token)
-                .expect("Failed to decode token headers")
-                .expect("No 'kid' claim present in token");
-
-            let jwk = jwks.find(&kid).expect("Specified key not found in set");
-
-            let res = validate(token, jwk, validations);
-            match res {
-                Ok(_) => Ok(req),
-                Err(error) => {
-                    println!("{:?}", error);
-                    Err((Error::from(ServiceError::AuthenticationError), req))
-                }
+    // If a JWKS contains multiple keys, the correct KID first
+    // needs to be fetched from the token headers.
+    let kid = match token_kid(token) {
+        Ok(asd) => match asd {
+            Some(kid) => kid,
+            None => {
+                return Err((
+                    Error::from(ServiceError::AuthenticationError(
+                        "No 'kid' claim present in token".to_string(),
+                    )),
+                    req,
+                ));
             }
+        },
+        Err(error) => {
+            return Err((
+                Error::from(ServiceError::AuthenticationError(error.to_string())),
+                req,
+            ));
         }
-        _ => Err((Error::from(ServiceError::JWKSFetchError), req)),
+    };
+
+    let jwk = jwks.find(&kid).expect("Specified key not found in set");
+
+    let res = validate(token, jwk, validations);
+    match res {
+        Ok(_) => Ok(req),
+        Err(error) => {
+            println!("{:?}", error);
+            Err((
+                Error::from(ServiceError::AuthenticationError(error.to_string())),
+                req,
+            ))
+        }
     }
 }
