@@ -4,6 +4,7 @@ mod app_settings;
 mod app_state;
 mod auth;
 mod errors;
+mod telemetry;
 
 use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
 use actix_settings::ApplySettings as _;
@@ -18,6 +19,7 @@ use entity::user;
 use migration::{Migrator, MigratorTrait};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use sea_orm::entity::prelude::*;
+use tracing_actix_web::TracingLogger;
 
 #[get("/ping")]
 async fn ping() -> impl Responder {
@@ -40,9 +42,9 @@ async fn get_user(
 
 #[actix_web::main]
 pub async fn start() -> Result<(), std::io::Error> {
-    let settings = app_settings::SettingsInitializer::init();
     dotenv().ok();
-    tracing_subscriber::fmt().init();
+    telemetry::init_telemetry("Yagram");
+    let settings = app_settings::SettingsInitializer::init();
 
     let app_state = AppState::new(&settings.application)
         .await
@@ -66,6 +68,7 @@ pub async fn start() -> Result<(), std::io::Error> {
     HttpServer::new(move || {
         let settings = settings_to_move.clone();
         App::new()
+            .wrap(TracingLogger::default())
             .wrap(Logger::new("%a %s %{User-Agent}i"))
             .wrap(
                 SessionMiddleware::builder(
@@ -88,5 +91,10 @@ pub async fn start() -> Result<(), std::io::Error> {
     .bind_openssl("127.0.0.1:8080", builder)?
     .apply_settings(&settings)
     .run()
-    .await
+    .await?;
+
+    // Ensure all spans have been shipped to Jaeger.
+    opentelemetry::global::shutdown_tracer_provider();
+
+    Ok(())
 }

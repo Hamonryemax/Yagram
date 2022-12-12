@@ -11,7 +11,7 @@ pub enum ServiceError {
     InternalServerError,
     BadRequest(String),
     NotFound,
-    AuthenticationError,
+    AuthenticationError(String),
     JWKSFetchError,
 }
 
@@ -29,7 +29,7 @@ impl ResponseError for ServiceError {
             }
             ServiceError::BadRequest(_) => StatusCode::BAD_REQUEST,
             ServiceError::NotFound => StatusCode::NOT_FOUND,
-            ServiceError::AuthenticationError => StatusCode::UNAUTHORIZED,
+            ServiceError::AuthenticationError(_) => StatusCode::UNAUTHORIZED,
         }
     }
 }

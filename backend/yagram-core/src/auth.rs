@@ -1,3 +1,4 @@
+pub mod jwks_store;
 pub mod jwt_validation;
 
 use crate::app_state::AppState;

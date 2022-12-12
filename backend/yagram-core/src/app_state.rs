@@ -5,11 +5,13 @@ use sea_orm::Database;
 use std::error::Error;
 
 use crate::app_settings::{AppSettings, OAuthSettings};
+use crate::auth::jwks_store::JWKSStore;
 
 pub struct AppState {
     pub db: DatabaseConnection,
     pub auth_client: BasicClient,
     pub settings: AppSettings,
+    pub jwks_store: JWKSStore,
 }
 
 fn create_auth_client(settings: &OAuthSettings) -> Result<BasicClient, Box<dyn Error>> {
@@ -36,10 +38,13 @@ impl AppState {
             RedirectUrl::new(redirect_uri).expect("Failed to create redirect URI"),
         );
 
+        let jwks_store = JWKSStore::new(settings.oauth.domain.clone()).await?;
+
         Ok(AppState {
             db,
             auth_client,
             settings: settings.clone(),
+            jwks_store,
         })
     }
 }
