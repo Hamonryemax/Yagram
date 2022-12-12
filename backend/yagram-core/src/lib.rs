@@ -1,10 +1,12 @@
 extern crate core;
 
+mod app_settings;
 mod app_state;
 mod auth;
 mod errors;
 
 use actix_session::{storage::RedisActorSessionStore, Session, SessionMiddleware};
+use actix_settings::{ApplySettings as _, Mode, Settings};
 use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{
@@ -40,20 +42,15 @@ async fn get_user(
     }
 }
 
-async fn ok_validator(
-    req: ServiceRequest,
-    credentials: BearerAuth,
-) -> Result<ServiceRequest, (Error, ServiceRequest)> {
-    println!("{:?}", credentials);
-    Ok(req)
-}
-
 #[actix_web::main]
 pub async fn start() -> Result<(), std::io::Error> {
+    let settings = app_settings::SettingsInitializer::init();
     dotenv().ok();
     tracing_subscriber::fmt().init();
 
-    let app_state = AppState::from_env().await.expect("AppState create failed");
+    let app_state = AppState::new(&settings.application)
+        .await
+        .expect("AppState create failed");
 
     Migrator::up(&app_state.db, None)
         .await
@@ -61,20 +58,22 @@ pub async fn start() -> Result<(), std::io::Error> {
 
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
     builder
-        .set_private_key_file(".crt/key.pem", SslFiletype::PEM)
+        .set_private_key_file(&settings.actix.tls.private_key, SslFiletype::PEM)
         .unwrap();
-    builder.set_certificate_chain_file(".crt/cert.pem").unwrap();
+    builder
+        .set_certificate_chain_file(&settings.actix.tls.certificate)
+        .unwrap();
 
     let state = web::Data::new(app_state);
-    HttpServer::new(move || {
-        let redis_connection_string =
-            env::var("REDIS_CONNECTION").expect("REDIS_CONNECTION in environment variable");
+    let settings_to_move = settings.clone();
 
+    HttpServer::new(move || {
+        let settings = settings_to_move.clone();
         App::new()
             .wrap(Logger::new("%a %s %{User-Agent}i"))
             .wrap(
                 SessionMiddleware::builder(
-                    RedisActorSessionStore::new(redis_connection_string),
+                    RedisActorSessionStore::new(settings.application.redis_connection.clone()),
                     Key::generate(),
                 )
                 .cookie_http_only(false)
@@ -91,6 +90,7 @@ pub async fn start() -> Result<(), std::io::Error> {
             )
     })
     .bind_openssl("127.0.0.1:8080", builder)?
+    .apply_settings(&settings)
     .run()
     .await
 }

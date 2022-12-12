@@ -27,10 +27,7 @@ pub async fn login(data: web::Data<AppState>, session: Session) -> impl Responde
         .add_scope(Scope::new("openid".to_string()))
         .add_scope(Scope::new("profile".to_string()))
         .add_scope(Scope::new("email".to_string()))
-        .add_extra_param(
-            "audience",
-            env::var("OAUTH_AUDIENCE").expect("Failed to read OAUTH_AUDIENCE from env"),
-        )
+        .add_extra_param("audience", &data.settings.oauth.audience)
         .set_pkce_challenge(pkce_code_challenge)
         .url();
 

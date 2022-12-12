@@ -1,36 +1,34 @@
+use crate::app_state::AppState;
 use crate::errors::ServiceError;
-use actix_web::{dev::ServiceRequest, Error};
+use actix_web::{dev::ServiceRequest, web, Error};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use alcoholic_jwt::{token_kid, validate, Validation, JWKS};
 use serde::Deserialize;
 use std::env;
 
-async fn fetch_jwks() -> Result<JWKS, Box<dyn std::error::Error>> {
-    Ok(reqwest::get(format!(
-        "https://{}/.well-known/jwks.json",
-        env::var("OAUTH_DOMAIN").expect("FAILED")
-    ))
-    .await?
-    .json::<JWKS>()
-    .await?)
+async fn fetch_jwks(auth_domain: &String) -> Result<JWKS, Box<dyn std::error::Error>> {
+    Ok(
+        reqwest::get(format!("https://{}/.well-known/jwks.json", auth_domain))
+            .await?
+            .json::<JWKS>()
+            .await?,
+    )
 }
 
 pub async fn validator(
     req: ServiceRequest,
     credentials: BearerAuth,
 ) -> Result<ServiceRequest, (Error, ServiceRequest)> {
-    let jwks_result = fetch_jwks().await;
+    let data = req.app_data::<web::Data<AppState>>().unwrap();
+    let oauth_domain = &data.settings.oauth.domain;
+    let jwks_result = fetch_jwks(oauth_domain).await;
 
     match jwks_result {
         Ok(jwks) => {
             let token = credentials.token();
 
             let validations = vec![
-                Validation::Issuer(format!(
-                    "https://{}/",
-                    env::var("OAUTH_DOMAIN")
-                        .expect("Failed to read OAUTH_DOMAIN in environment variable")
-                )),
+                Validation::Issuer(format!("https://{}/", oauth_domain)),
                 Validation::SubjectPresent,
             ];
 
