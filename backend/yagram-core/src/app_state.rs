@@ -5,7 +5,7 @@ use sea_orm::Database;
 use std::error::Error;
 
 use crate::app_settings::{AppSettings, OAuthSettings};
-use crate::auth::jwks_store::JWKSStore;
+use crate::auth::JWKSStore;
 
 pub struct AppState {
     pub db: DatabaseConnection,

@@ -81,10 +81,14 @@ pub async fn start() -> Result<(), std::io::Error> {
             )
             .app_data(state.clone())
             .service(ping)
-            .service(scope("/auth").service(auth::login).service(auth::auth))
+            .service(
+                scope("/auth")
+                    .service(auth::handlers::login)
+                    .service(auth::handlers::auth),
+            )
             .service(
                 scope("/api")
-                    .wrap(HttpAuthentication::bearer(auth::jwt_validation::validator))
+                    .wrap(HttpAuthentication::bearer(auth::validator))
                     .service(get_user),
             )
     })
