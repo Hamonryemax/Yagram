@@ -43,7 +43,7 @@ pub struct AuthRequest {
 }
 
 #[get("/authorize")]
-pub async fn auth(
+pub async fn authorize(
     data: web::Data<AppState>,
     params: web::Query<AuthRequest>,
     session: Session,

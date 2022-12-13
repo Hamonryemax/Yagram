@@ -2,19 +2,13 @@ use crate::app_state::AppState;
 use crate::errors::ServiceError;
 use actix_web::{dev::ServiceRequest, web, Error};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
-use alcoholic_jwt::{token_kid, validate, Validation, JWKS};
+use alcoholic_jwt::{token_kid, validate, Validation};
+use jwt_simple::reexports::serde_json;
+use serde_json::from_value;
 
-pub struct JWKSFetcher {
-    jwks: Option<JWKS>,
-}
-
-async fn fetch_jwks(auth_domain: &String) -> Result<JWKS, Box<dyn std::error::Error>> {
-    Ok(
-        reqwest::get(format!("https://{}/.well-known/jwks.json", auth_domain))
-            .await?
-            .json::<JWKS>()
-            .await?,
-    )
+struct JWTTokenInformation {
+    sub: String,
+    exp: String,
 }
 
 pub async fn validator(
@@ -58,7 +52,7 @@ pub async fn validator(
 
     let res = validate(token, jwk, validations);
     match res {
-        Ok(_) => Ok(req),
+        Ok(valid_jwt) => Ok(req),
         Err(error) => {
             println!("{:?}", error);
             Err((

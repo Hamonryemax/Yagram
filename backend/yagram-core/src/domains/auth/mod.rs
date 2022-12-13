@@ -1,6 +1,6 @@
 mod jwks_store;
-mod jwt_validation;
+mod validator;
 
 pub mod handlers;
 pub use jwks_store::*;
-pub use jwt_validation::*;
+pub use validator::*;
