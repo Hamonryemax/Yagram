@@ -3,7 +3,8 @@ use actix_web::{
     http::{header::ContentType, StatusCode},
     HttpResponse,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize, Serializer};
+use serde_json::json;
 use strum_macros::Display;
 
 #[derive(Debug, Display, Serialize)]
@@ -19,7 +20,11 @@ impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code())
             .insert_header(ContentType::json())
-            .body(format!("{{ \"message\": \"{}\" }}", self))
+            .body(format!(
+                "{{ \"status\": {}, \"message\": {} }}",
+                self.status_code().as_u16(),
+                json!(self)
+            ))
     }
 
     fn status_code(&self) -> StatusCode {

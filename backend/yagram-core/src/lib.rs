@@ -1,8 +1,6 @@
-extern crate core;
-
+mod app_data;
 mod app_settings;
-mod app_state;
-mod auth;
+mod domains;
 mod errors;
 mod telemetry;
 
@@ -12,32 +10,17 @@ use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{get, web, web::scope, App, HttpResponse, HttpServer, Responder};
 use actix_web_httpauth::middleware::HttpAuthentication;
-use app_state::AppState;
+use app_data::AppState;
+use domains::{auth, messages, users};
 use dotenv::dotenv;
-use entity::prelude::User;
-use entity::user;
 use migration::{Migrator, MigratorTrait};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use sea_orm::entity::prelude::*;
+
 use tracing_actix_web::TracingLogger;
 
 #[get("/ping")]
 async fn ping() -> impl Responder {
     HttpResponse::Ok().body("OK")
-}
-
-#[get("/users/{user_id}")]
-async fn get_user(
-    data: web::Data<AppState>,
-    path: web::Path<i32>,
-) -> Result<HttpResponse, errors::ServiceError> {
-    let id = path.into_inner();
-    let user_o: Option<user::Model> = User::find_by_id(id).one(&data.db).await.unwrap();
-
-    match user_o {
-        Some(user) => Ok(HttpResponse::Ok().json(user)),
-        None => Err(errors::ServiceError::NotFound),
-    }
 }
 
 #[actix_web::main]
@@ -81,11 +64,16 @@ pub async fn start() -> Result<(), std::io::Error> {
             )
             .app_data(state.clone())
             .service(ping)
-            .service(scope("/auth").service(auth::login).service(auth::auth))
+            .service(
+                scope("/auth")
+                    .service(auth::handlers::login)
+                    .service(auth::handlers::authorize),
+            )
             .service(
                 scope("/api")
-                    .wrap(HttpAuthentication::bearer(auth::jwt_validation::validator))
-                    .service(get_user),
+                    .wrap(HttpAuthentication::bearer(auth::validator))
+                    .service(users::handlers::get_user)
+                    .service(messages::handlers::connect),
             )
     })
     .bind_openssl("127.0.0.1:8080", builder)?
