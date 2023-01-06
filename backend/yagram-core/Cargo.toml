@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 entity = { path = "../entity" }
 migration = { path = "../migration" }
+actix = "0.13.0"
+actix-web-actors = "4.1.0"
 actix-web = { version = "^4", features = ["openssl", "cookies", "secure-cookies"] }
 actix-web-httpauth = "0.8.0"
 actix-session = { version = "0.7.2", features = ["redis-actor-session"] }

@@ -1,4 +1,4 @@
-use crate::app_state::AppState;
+use crate::app_data::AppState;
 use crate::errors;
 use crate::users::queries::find_user_by_id;
 use actix_web::{get, web, HttpResponse};

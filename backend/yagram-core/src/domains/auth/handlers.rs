@@ -1,4 +1,4 @@
-use crate::app_state::AppState;
+use crate::app_data::AppState;
 use actix_session::Session;
 use actix_web::{get, http::header, web, HttpResponse, Responder};
 use oauth2::{
@@ -72,9 +72,6 @@ pub async fn authorize(
 
     match token {
         Ok(res) => HttpResponse::Ok().json(res),
-        Err(err) => {
-            println!("{:?}", err);
-            HttpResponse::InternalServerError().json(format!("{:?}", err))
-        }
+        Err(err) => HttpResponse::InternalServerError().json(format!("{:?}", err)),
     }
 }

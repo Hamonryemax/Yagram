@@ -1,17 +1,19 @@
-use crate::app_state::AppState;
+use crate::app_data::AppState;
 use crate::auth::JwtUserPayload;
 use crate::domains::users;
 use crate::errors::ServiceError;
+use actix_session::SessionExt;
 use actix_web::{dev::ServiceRequest, web, Error};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use alcoholic_jwt::{token_kid, validate, Validation};
-use serde_json::{from_value, json};
+use serde_json::from_value;
 
 pub async fn validator(
     req: ServiceRequest,
     credentials: BearerAuth,
 ) -> Result<ServiceRequest, (Error, ServiceRequest)> {
     let data = req.app_data::<web::Data<AppState>>().unwrap();
+    let session = req.get_session();
     let oauth_domain = &data.settings.oauth.domain;
     let oauth_audience = &data.settings.oauth.audience;
     let jwks = &data.jwks_store.jwks;
@@ -84,19 +86,22 @@ pub async fn validator(
     let user = users::queries::find_user_by_sub(&data.db, jwt_user_payload.sub)
         .await
         .unwrap();
-    match user {
-        Some(user) => {
-            // TODO: write user to app_data
-        }
+
+    let db_user = match user {
+        Some(user) => user,
         None => {
-            // TODO: create user in db and write to app_data
             let auth0_user_info = users::queries::auth0_user_info(oauth_domain.to_string(), token)
                 .await
                 .unwrap();
             users::mutations::create_user_from_auth0(&data.db, auth0_user_info)
                 .await
-                .expect("Failed to create new user");
+                .expect("Failed to create new user")
         }
     };
+
+    session
+        .insert("user", db_user)
+        .expect("Failed to write to session");
+
     Ok(req)
 }

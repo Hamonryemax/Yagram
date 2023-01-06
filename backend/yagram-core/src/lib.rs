@@ -1,5 +1,5 @@
+mod app_data;
 mod app_settings;
-mod app_state;
 mod domains;
 mod errors;
 mod telemetry;
@@ -10,8 +10,8 @@ use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{get, web, web::scope, App, HttpResponse, HttpServer, Responder};
 use actix_web_httpauth::middleware::HttpAuthentication;
-use app_state::AppState;
-use domains::{auth, users};
+use app_data::AppState;
+use domains::{auth, messages, users};
 use dotenv::dotenv;
 use migration::{Migrator, MigratorTrait};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
@@ -72,7 +72,8 @@ pub async fn start() -> Result<(), std::io::Error> {
             .service(
                 scope("/api")
                     .wrap(HttpAuthentication::bearer(auth::validator))
-                    .service(users::handlers::get_user),
+                    .service(users::handlers::get_user)
+                    .service(messages::handlers::connect),
             )
     })
     .bind_openssl("127.0.0.1:8080", builder)?
