@@ -1,5 +1,4 @@
 .container {
-  background-color: white;
   width: 1200px;
   margin: 0 auto;
 }
@@ -7,40 +6,47 @@
 .header {
   height: 100px;
   width: 100%;
-  background-color: pink;
 }
 
 .header_wrapper {
-  background-color: pink;
+  background-color: #fefeff;
+  width: 100%;
   height: 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.header_logo::first-letter {
+  color: #fc3f1e;
+}
+
 .header_logo {
+  color: #000000;
   font-size: 60px;
   display: inline-block;
 }
 
 .main_space {
   display: flex;
-  background-color: rgb(180, 3, 3);
   height: 720px;
   width: 1200px;
   margin: 0 auto;
 }
 
 .contacts {
-  background-color: blue;
+  background-color: #eeeeef;
   width: 31%;
   height: 100%;
   padding: 10px;
+  border: 2px solid #ffcc02;
 }
 
 .chat {
-  background-color: blueviolet;
+  background-color: #d9d9d9;
   height: 100%;
   width: 69%;
   padding: 10px;
+  border: 2px solid #ffcc02;
+  border-left: none;
 }
