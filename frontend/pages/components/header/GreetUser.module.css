@@ -1,0 +1,6 @@
+.greet_user {
+  color: #000000;
+  font-size: 30px;
+  display: inline-block;
+  flex-basis: 46%;
+}

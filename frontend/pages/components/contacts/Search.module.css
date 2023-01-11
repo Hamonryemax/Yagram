@@ -1,0 +1,11 @@
+.search {
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  display: block;
+  width: 100%;
+  background-color: #ffffff;
+  height: 45px;
+  border: none;
+  border-radius: 12px;
+  margin: auto;
+}
