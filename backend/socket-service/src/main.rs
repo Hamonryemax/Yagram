@@ -2,8 +2,7 @@ mod messages;
 mod server;
 mod session;
 
-use crate::messages::{Connect, Disconnect};
-use actix::{Actor, System};
+use actix::Actor;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
