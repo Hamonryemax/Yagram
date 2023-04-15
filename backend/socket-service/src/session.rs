@@ -1,4 +1,4 @@
-use crate::messages::{Connect, Disconnect};
+use crate::messages::StatusMessage;
 use crate::server::WsServer;
 use actix::{fut, prelude::*};
 use actix_broker::BrokerIssue;
@@ -9,12 +9,12 @@ pub struct WsSession {}
 impl Actor for WsSession {
     type Context = ws::WebsocketContext<Self>;
 
-    fn started(&mut self, ctx: &mut Self::Context) {
-        self.issue_system_async(Connect {});
+    fn started(&mut self, _ctx: &mut Self::Context) {
+        self.issue_system_async(StatusMessage::connect("1".to_string()));
     }
 
-    fn stopped(&mut self, ctx: &mut Self::Context) {
-        self.issue_system_async(Disconnect {});
+    fn stopped(&mut self, _ctx: &mut Self::Context) {
+        self.issue_system_async(StatusMessage::disconnect("1".to_string()));
     }
 }
 

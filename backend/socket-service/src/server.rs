@@ -1,30 +1,42 @@
-use crate::messages::{Connect, Disconnect};
+use crate::messages::StatusMessage;
 use actix::prelude::*;
-use actix_broker::{BrokerSubscribe, SystemBroker};
+use actix_broker::BrokerSubscribe;
+use serde_json::json;
 
-#[derive(Default)]
-pub struct WsServer {}
+use kafka_client::MessageProducer;
+
+pub struct WsServer {
+    message_producer: MessageProducer,
+}
+
+impl Default for WsServer {
+    fn default() -> Self {
+        WsServer {
+            message_producer: MessageProducer::new("localhost:9093".to_string()),
+        }
+    }
+}
 
 impl Actor for WsServer {
     type Context = Context<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        self.subscribe_system_async::<Connect>(ctx);
-        self.subscribe_system_async::<Disconnect>(ctx);
+        self.subscribe_system_async::<StatusMessage>(ctx);
     }
 }
 
-impl Handler<Connect> for WsServer {
+impl Handler<StatusMessage> for WsServer {
     type Result = ();
-    fn handle(&mut self, msg: Connect, ctx: &mut Self::Context) -> Self::Result {
-        println!("Accepted connect message");
-    }
-}
-
-impl Handler<Disconnect> for WsServer {
-    type Result = ();
-    fn handle(&mut self, msg: Disconnect, ctx: &mut Self::Context) -> Self::Result {
-        println!("Accepted disconnect message");
+    fn handle(&mut self, msg: StatusMessage, ctx: &mut Self::Context) -> Self::Result {
+        let fut = Box::pin(async move {
+            let message = json!(msg);
+            let result = MessageProducer::new("localhost:9093".to_string())
+                .produce("messages", message.to_string())
+                .await;
+            println!("result: {:?}", result);
+        });
+        let fut_actor = fut.into_actor(self);
+        ctx.spawn(fut_actor);
     }
 }
 
