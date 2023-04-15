@@ -34,7 +34,6 @@ impl MessageProducer {
         let record = FutureRecord::to(topic_name)
             .payload(message.to_bytes())
             .key(key);
-        let result = self.producer.send(record, Duration::from_secs(0)).await;
-        result
+        self.producer.send(record, Duration::from_secs(0)).await
     }
 }
