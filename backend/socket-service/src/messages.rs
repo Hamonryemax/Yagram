@@ -3,17 +3,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
 enum StatusMessageType {
+    #[serde(rename = "connect")]
     Connect,
+    #[serde(rename = "disconnect")]
     Disconnect,
-}
-
-impl ToString for StatusMessageType {
-    fn to_string(&self) -> String {
-        match self {
-            StatusMessageType::Connect => "connect".to_string(),
-            StatusMessageType::Disconnect => "disconnect".to_string(),
-        }
-    }
 }
 
 #[derive(Clone, Message, Serialize, Deserialize)]
