@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = [".", "migration", "entity", "yagram-core", "user-status-service", "socket-service", "kafka-client"]
+members = [".", "migration", "entity", "yagram-core", "user-status-service", "socket-service", "message-handler-service", "kafka-client"]
 
 [dependencies]
 oauth2 = "4.3.0"
