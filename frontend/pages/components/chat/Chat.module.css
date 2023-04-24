@@ -1,0 +1,33 @@
+.nameUser {
+  font-size: 14px;
+  /* background-color: black; */
+}
+
+.message {
+  background-color: #ffcc00;
+  font-size: 18px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  padding-left: 15px;
+}
+
+.message_owner {
+  background-color: aquamarine;
+}
+
+.writeText {
+  position: relative;
+  width: 700px;
+  height: 100px;
+  background-color: aqua;
+  left: 50px;
+  top: 490px;
+  text-align: center;
+  align-items: center;
+  opacity: 80%;
+}
+
+.text {
+  height: 70px;
+  width: 700px;
+}
