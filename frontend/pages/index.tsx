@@ -5,7 +5,11 @@ import React, { useEffect, useState } from "react";
 import MenuButton from "./components/header/MenuButton";
 import GreetUser from "./components/header/GreetUser";
 import IconUser from "./components/header/IconUser";
-import Search from ".//components/contacts/Search";
+import Search from "./components/contacts/Search";
+import Chat from "./components/chat/chat2";
+import ContactList from "./components/contacts/Contact";
+import profilePicMarvin from "./components/contacts/marvin-4.130912.130920.png";
+import profilePicGendalf from "./components/contacts/gendalf.jpeg";
 
 export default function Home() {
   return (
@@ -32,8 +36,37 @@ export default function Home() {
       <section className={styles.main_space}>
         <div className={styles.contacts}>
           <Search />
+          <div>
+            <ContactList
+              contacts={[
+                {
+                  id: "1",
+                  name: "Maksim",
+                  lastMessage: "hello",
+                  avatar: profilePicMarvin,
+                  isOnline: true,
+                },
+                {
+                  id: "2",
+                  name: "Kostya",
+                  lastMessage: "hello!",
+                  avatar: profilePicGendalf,
+                  isOnline: false,
+                },
+              ]}
+            />
+          </div>
         </div>
-        <div className={styles.chat}></div>
+        <div className={styles.chat}>
+          {/* Messages */}
+          <Chat
+          // data={[
+          //   { firstName: "Kostyan", lastName: "Iakushin", age: 29 },
+          //   { firstName: "Maksim", lastName: "Iakushin", age: 23 },
+          //   { firstName: "Denis", lastName: "Iakushin", age: 17 },
+          // ]}
+          />
+        </div>
       </section>
     </div>
   );
