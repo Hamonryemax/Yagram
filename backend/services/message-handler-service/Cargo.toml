@@ -1,0 +1,14 @@
+[package]
+name = "message-handler-service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+kafka-client = { path = "../../libs/kafka-client" }
+actix-web = "4"
+actix-rt = "2.7.0"
+actix = "0.13.0"
+log = "0.4.17"
+simple_logger = "4"

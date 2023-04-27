@@ -1,0 +1,53 @@
+version: "3.8"
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  kafka:
+    container_name: yagram-dev-kafka
+    image: docker.io/bitnami/kafka:3.4
+    networks:
+      - app-tier
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  socket-service:
+    depends_on:
+      - kafka
+    container_name: yagram-dev-socket-service
+    build:
+      context: .
+      dockerfile: services/socket-service/dev.Dockerfile
+    networks:
+      - app-tier
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./services/socket-service
+        target: /usr/local/app/services/socket-service
+
+  message-handler-service:
+    depends_on:
+      - kafka
+    container_name: yagram-dev-message-handler-service
+    build:
+      context: .
+      dockerfile: services/message-handler-service/dev.Dockerfile
+    networks:
+      - app-tier
+    volumes:
+      - type: bind
+        source: ./services/message-handler-service
+        target: /usr/local/app/services/message-handler-service
+
+volumes:
+  kafka_data:
+    driver: local
+
