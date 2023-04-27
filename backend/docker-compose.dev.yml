@@ -23,15 +23,15 @@ services:
     container_name: yagram-dev-socket-service
     build:
       context: .
-      dockerfile: socket-service/dev.Dockerfile
+      dockerfile: services/socket-service/dev.Dockerfile
     networks:
       - app-tier
     ports:
       - "8080:8080"
     volumes:
       - type: bind
-        source: ./socket-service
-        target: /usr/local/app/socket-service
+        source: ./services/socket-service
+        target: /usr/local/app/services/socket-service
 
   message-handler-service:
     depends_on:
@@ -39,13 +39,13 @@ services:
     container_name: yagram-dev-message-handler-service
     build:
       context: .
-      dockerfile: message-handler-service/dev.Dockerfile
+      dockerfile: services/message-handler-service/dev.Dockerfile
     networks:
       - app-tier
     volumes:
       - type: bind
-        source: ./message-handler-service
-        target: /usr/local/app/message-handler-service
+        source: ./services/message-handler-service
+        target: /usr/local/app/services/message-handler-service
 
 volumes:
   kafka_data:
