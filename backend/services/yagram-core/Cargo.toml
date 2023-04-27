@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-entity = { path = "../entity" }
-migration = { path = "../migration" }
+entity = { path = "../../libs/entity" }
+migration = { path = "../../libs/migration" }
 actix = "0.13.0"
 actix-web-actors = "4.1.0"
 actix-web = { version = "^4", features = ["openssl", "cookies", "secure-cookies"] }

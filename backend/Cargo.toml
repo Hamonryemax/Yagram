@@ -1,13 +1,10 @@
-[package]
-name = "backend"
-version = "0.1.0"
-edition = "2021"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = [".", "migration", "entity", "yagram-core", "user-status-service", "socket-service", "message-handler-service", "kafka-client"]
+members = ["services/*", "libs/*"]
 
-[dependencies]
-oauth2 = "4.3.0"
-yagram-core = { path = "yagram-core" }
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Konstantin Yakushin", "Maxim Yakushin"]
+description = "Workspace for Yagram Backend"
