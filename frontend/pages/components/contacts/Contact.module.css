@@ -11,6 +11,13 @@
   border-bottom: 1px solid #ccc;
 }
 
+.contact:hover {
+  opacity: 90%;
+  border-bottom: 2px solid #ffcc00;
+  box-shadow: 2px 2px 5px #ccc;
+  transform: scale(1.01);
+}
+
 .image {
   width: 65px;
   height: 65px;

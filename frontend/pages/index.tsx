@@ -6,7 +6,7 @@ import MenuButton from "./components/header/MenuButton";
 import GreetUser from "./components/header/GreetUser";
 import IconUser from "./components/header/IconUser";
 import Search from "./components/contacts/Search";
-import Chat from "./components/chat/chat2";
+import Chat from "./components/chat/Chat";
 import ContactList from "./components/contacts/Contact";
 import profilePicMarvin from "./components/contacts/marvin-4.130912.130920.png";
 import profilePicGendalf from "./components/contacts/gendalf.jpeg";
@@ -59,13 +59,7 @@ export default function Home() {
         </div>
         <div className={styles.chat}>
           {/* Messages */}
-          <Chat
-          // data={[
-          //   { firstName: "Kostyan", lastName: "Iakushin", age: 29 },
-          //   { firstName: "Maksim", lastName: "Iakushin", age: 23 },
-          //   { firstName: "Denis", lastName: "Iakushin", age: 17 },
-          // ]}
-          />
+          <Chat />
         </div>
       </section>
     </div>

@@ -1,60 +1,62 @@
-type User = {
-  id: string;
-  name: string;
-  nickname: string;
-};
+import React, { useState } from "react";
+import cx from "classnames";
+import {
+  messages as mockMessages,
+  user1 as ownerUser,
+  user2,
+} from "./mockMessages";
+import styles from "../chat/Chat.module.css";
 
-type Message = {
-  id: string;
-  senderId: string;
-  receiverId: string;
-  text: string;
-  date: Date;
-};
+function Chat() {
+  const [messages, setMessages] = useState(mockMessages);
+  const [input, setInput] = useState("");
 
-export const user1: User = {
-  id: "5",
-  name: "Maxim",
-  nickname: "Hale Male",
-};
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setMessages([...messages, { text: input, sender: "user" }]);
+    setInput("");
+  };
 
-export const user2: User = {
-  id: "6",
-  name: "Kostya",
-  nickname: "Slowyn",
-};
-
-export const messages: Message[] = [
-  {
-    id: "0",
-    senderId: "5",
-    receiverId: "6",
-    text: "hello",
-    date: new Date(),
-  },
-  {
-    id: "1",
-    senderId: "6",
-    receiverId: "5",
-    text: "hello",
-    date: new Date(),
-  },
-  {
-    id: "2",
-    senderId: "5",
-    receiverId: "6",
-    text: "How are you?",
-    date: new Date(),
-  },
-  {
-    id: "3",
-    senderId: "6",
-    receiverId: "5",
-    text: "I am fine! Thanks!",
-    date: new Date(),
-  },
-];
-
-function Messages() {
-  return messages;
+  return (
+    <div>
+      <div>
+        {messages.map((message) => {
+          const isOwnerMessage = message.senderId === ownerUser.id;
+          let name;
+          if (isOwnerMessage) {
+            name = ownerUser.nickname;
+          } else {
+            name = user2.nickname;
+          }
+          return (
+            <div
+              key={message.id}
+              className={cx(styles.message, {
+                [styles.message_owner]: isOwnerMessage,
+              })}
+            >
+              <div className={styles.nameUser}>{name}</div>
+              {message.text}
+            </div>
+          );
+        })}
+      </div>
+      <div className={styles.containerForInput}>
+        <form className={styles.writeText} onSubmit={handleSubmit}>
+          <input
+            className={styles.text}
+            type="text"
+            placeholder="Type your message..."
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+          />
+          <button className={styles.sendButton} type="submit">
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
+
+export default Chat;
