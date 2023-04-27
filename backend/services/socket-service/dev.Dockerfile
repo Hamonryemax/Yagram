@@ -16,4 +16,4 @@ RUN cargo install cargo-watch
 RUN cargo build -p socket-service
 
 # Start the application and watch changes
-CMD ["cargo", "watch", "-x", "run -p socket-service", "-w", "./socket-service/"]
+CMD ["cargo", "watch", "-x", "run -p socket-service", "-w", "./services/socket-service/"]

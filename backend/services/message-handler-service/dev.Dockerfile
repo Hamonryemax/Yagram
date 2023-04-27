@@ -16,5 +16,5 @@ RUN cargo install cargo-watch
 RUN cargo build -p message-handler-service
 
 # Start the application and watch changes
-CMD ["cargo", "watch", "-x", "run -p message-handler-service", "-w", "./message-handler-service/"]
+CMD ["cargo", "watch", "-x", "run -p message-handler-service", "-w", "./services/message-handler-service/"]
 
