@@ -13,7 +13,7 @@ pub struct WsServer {
 impl Default for WsServer {
     fn default() -> Self {
         WsServer {
-            message_producer: MessageProducer::new("localhost:9093".to_string()),
+            message_producer: MessageProducer::new("yagram-dev-kafka:9092".to_string()),
         }
     }
 }

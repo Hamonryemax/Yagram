@@ -37,7 +37,7 @@ impl MessageProcessor {
         let context = CustomContext;
         let consumer: MessageConsumer = ClientConfig::new()
             .set("group.id", "message_handler_group_test")
-            .set("bootstrap.servers", "localhost:9093")
+            .set("bootstrap.servers", "yagram-dev-kafka:9092")
             .set("enable.partition.eof", "false")
             .set("session.timeout.ms", "6000")
             .set("enable.auto.commit", "false")
@@ -96,7 +96,7 @@ impl Actor for MessageProcessor {
         ctx.spawn(actor_future);
     }
 
-    fn stopped(&mut self, ctx: &mut Self::Context) {
+    fn stopped(&mut self, _ctx: &mut Self::Context) {
         info!("MessageProcessor Actor stopped");
     }
 }
