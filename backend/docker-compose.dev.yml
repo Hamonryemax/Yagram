@@ -32,6 +32,9 @@ services:
       - type: bind
         source: ./services/socket-service
         target: /usr/local/app/services/socket-service
+      - type: bind
+        source: ./libs
+        target: /usr/local/app/libs
 
   message-handler-service:
     depends_on:
@@ -46,6 +49,9 @@ services:
       - type: bind
         source: ./services/message-handler-service
         target: /usr/local/app/services/message-handler-service
+      - type: bind
+        source: ./libs
+        target: /usr/local/app/libs
 
 volumes:
   kafka_data:

@@ -1,4 +1,3 @@
-mod messages;
 mod server;
 mod session;
 

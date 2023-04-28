@@ -1,7 +1,8 @@
+use crate::KafkaMessage;
 use actix::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 enum StatusMessageType {
     #[serde(rename = "connect")]
     Connect,
@@ -9,7 +10,7 @@ enum StatusMessageType {
     Disconnect,
 }
 
-#[derive(Clone, Message, Serialize, Deserialize)]
+#[derive(Clone, Message, Serialize, Deserialize, Debug)]
 #[rtype(result = "()")]
 pub struct StatusMessage {
     status: StatusMessageType,
@@ -31,26 +32,8 @@ impl StatusMessage {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
-pub struct ClientTextMessageData {
-    receiver_id: String,
-    text: String,
-}
-
-#[derive(Clone, Message, Serialize, Deserialize)]
-#[rtype(result = "()")]
-pub struct TextMessage {
-    user_id: String,
-    receiver_id: String,
-    text: String,
-}
-
-impl TextMessage {
-    pub fn from_client(user_id: String, data: ClientTextMessageData) -> Self {
-        TextMessage {
-            user_id,
-            receiver_id: data.receiver_id,
-            text: data.text,
-        }
+impl From<StatusMessage> for KafkaMessage {
+    fn from(value: StatusMessage) -> Self {
+        KafkaMessage::StatusMessage(value)
     }
 }

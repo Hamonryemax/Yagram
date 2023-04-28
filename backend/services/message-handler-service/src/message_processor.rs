@@ -1,5 +1,6 @@
 use actix::prelude::*;
 use kafka_client::rdkafka;
+use kafka_messages::KafkaMessage;
 use log::{info, warn};
 use rdkafka::client::ClientContext;
 use rdkafka::config::{ClientConfig, RDKafkaLogLevel};
@@ -74,7 +75,10 @@ impl Actor for MessageProcessor {
                                 ""
                             }
                         };
-                        info!("key: '{:?}', payload: '{}', topic: {}, partition: {}, offset: {}, timestamp: {:?}",
+
+                        let payload = serde_json::from_str::<KafkaMessage>(payload);
+
+                        info!("key: '{:?}', payload: '{:?}', topic: {}, partition: {}, offset: {}, timestamp: {:?}",
                             m.key(),
                             payload,
                             m.topic(),
