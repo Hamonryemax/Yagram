@@ -8,6 +8,8 @@ import {
 import styles from "../chat/Chat.module.css";
 
 function Chat() {
+  let today = new Date();
+  let now = today.toLocaleTimeString("en-US");
   const [messages, setMessages] = useState(mockMessages);
   const [input, setInput] = useState("");
 
@@ -19,6 +21,7 @@ function Chat() {
 
   return (
     <div>
+      {/* Bubble message */}
       <div>
         {messages.map((message) => {
           const isOwnerMessage = message.senderId === ownerUser.id;
@@ -31,20 +34,21 @@ function Chat() {
           return (
             <div
               key={message.id}
-              className={cx(styles.message, {
-                [styles.message_owner]: isOwnerMessage,
+              className={cx(styles.messageBubble, {
+                [styles.messageBubble_owner]: isOwnerMessage,
               })}
             >
-              <div className={styles.nameUser}>{name}</div>
-              {message.text}
+              {/* <div className={styles.messageTime}>{now}</div> */}
+              <div className={styles.messageText}>{message.text}</div>
             </div>
           );
         })}
       </div>
+      {/* Input Window */}
       <div className={styles.containerForInput}>
         <form className={styles.writeText} onSubmit={handleSubmit}>
           <input
-            className={styles.text}
+            className={styles.inputField}
             type="text"
             placeholder="Type your message..."
             value={input}
