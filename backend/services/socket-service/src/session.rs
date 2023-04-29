@@ -1,15 +1,15 @@
-use crate::messages::{ClientTextMessageData, StatusMessage, TextMessage};
 use crate::server::WsServer;
 use actix::{fut, prelude::*};
 use actix_broker::BrokerIssue;
 use actix_web_actors::ws;
+use kafka_messages::{ClientUserMessageData, KafkaMessage, StatusMessage, UserMessage};
 
 pub struct WsSession {}
 
 impl WsSession {
     fn process_text_message(&self, message: &str) {
-        if let Ok(message_info) = serde_json::from_str::<ClientTextMessageData>(message) {
-            self.issue_system_async(TextMessage::from_client("1".to_string(), message_info));
+        if let Ok(message_info) = serde_json::from_str::<ClientUserMessageData>(message) {
+            self.issue_system_async(UserMessage::from_client("1".to_string(), message_info));
         }
     }
 }

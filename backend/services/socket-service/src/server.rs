@@ -1,6 +1,6 @@
-use crate::messages::{StatusMessage, TextMessage};
 use actix::prelude::*;
 use actix_broker::BrokerSubscribe;
+use kafka_messages::{KafkaMessage, StatusMessage, UserMessage};
 use serde::Serialize;
 use serde_json::json;
 
@@ -39,7 +39,7 @@ impl Actor for WsServer {
 
     fn started(&mut self, ctx: &mut Self::Context) {
         self.subscribe_system_async::<StatusMessage>(ctx);
-        self.subscribe_system_async::<TextMessage>(ctx);
+        self.subscribe_system_async::<UserMessage>(ctx);
     }
 }
 
@@ -48,8 +48,12 @@ impl Handler<StatusMessage> for WsServer {
     fn handle(&mut self, msg: StatusMessage, ctx: &mut Self::Context) -> Self::Result {
         let mut producer = self.message_producer.clone();
         let fut = Box::pin(async move {
-            let message = json!(msg);
-            let result = producer.produce("messages", message.to_string()).await;
+            let kafka_message = KafkaMessage::from(msg);
+            let serialized_message = json!(kafka_message);
+            println!("Sending = {}", serialized_message.to_string());
+            let result = producer
+                .produce("messages", serialized_message.to_string())
+                .await;
             match result {
                 Ok(_) => {}
                 Err(e) => println!("{:?}", e),
@@ -60,14 +64,17 @@ impl Handler<StatusMessage> for WsServer {
     }
 }
 
-impl Handler<TextMessage> for WsServer {
+impl Handler<UserMessage> for WsServer {
     type Result = ();
 
-    fn handle(&mut self, msg: TextMessage, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: UserMessage, ctx: &mut Self::Context) -> Self::Result {
         let mut producer = self.message_producer.clone();
         let fut = Box::pin(async move {
-            let message = json!(msg);
-            let result = producer.produce("messages", message.to_string()).await;
+            let kafka_message = KafkaMessage::from(msg);
+            let serialized_message = json!(kafka_message);
+            let result = producer
+                .produce("messages", serialized_message.to_string())
+                .await;
             match result {
                 Ok(_) => {}
                 Err(e) => println!("{:?}", e),

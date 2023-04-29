@@ -1968,6 +1968,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "kafka-messages"
+version = "0.1.0"
+dependencies = [
+ "actix",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "kv-log-macro"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2094,7 +2103,10 @@ dependencies = [
  "actix-rt",
  "actix-web",
  "kafka-client",
+ "kafka-messages",
  "log",
+ "serde",
+ "serde_json",
  "simple_logger",
 ]
 
@@ -3435,6 +3447,7 @@ dependencies = [
  "actix-web",
  "actix-web-actors",
  "kafka-client",
+ "kafka-messages",
  "serde",
  "serde_json",
 ]
