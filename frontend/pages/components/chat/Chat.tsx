@@ -22,7 +22,7 @@ function Chat() {
   return (
     <div>
       {/* Bubble message */}
-      <div>
+      <div className={styles.message}>
         {messages.map((message) => {
           const isOwnerMessage = message.senderId === ownerUser.id;
           let name;
@@ -34,12 +34,43 @@ function Chat() {
           return (
             <div
               key={message.id}
-              className={cx(styles.messageBubble, {
-                [styles.messageBubble_owner]: isOwnerMessage,
+              className={cx(styles.messageOuter, {
+                [styles.messageOuterOwner]: isOwnerMessage,
               })}
             >
-              {/* <div className={styles.messageTime}>{now}</div> */}
-              <div className={styles.messageText}>{message.text}</div>
+              <div
+                className={cx(styles.messageAvatar, {
+                  [styles.messageAvatarOwner]: isOwnerMessage,
+                })}
+              ></div>
+              <div
+                className={cx(styles.messageInner, {
+                  [styles.messageInnerOwner]: isOwnerMessage,
+                })}
+              >
+                <div
+                  className={cx(styles.messageBubble, {
+                    [styles.messageBubbleOwner]: isOwnerMessage,
+                  })}
+                >
+                  {message.text}
+                </div>
+                <div
+                  className={cx(styles.messageActions, {
+                    [styles.messageActionsOwner]: isOwnerMessage,
+                  })}
+                ></div>
+                <div
+                  className={cx(styles.messageSpacer, {
+                    [styles.messageSpacerOwner]: isOwnerMessage,
+                  })}
+                ></div>
+              </div>
+              <div
+                className={cx(styles.messageStatus, {
+                  [styles.messageStatusOwner]: isOwnerMessage,
+                })}
+              ></div>
             </div>
           );
         })}

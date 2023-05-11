@@ -43,7 +43,7 @@ export const messages: Message[] = [
     id: "2",
     senderId: "5",
     receiverId: "6",
-    text: "How are you?",
+    text: "How are you? How do the English Learners who enroll in public charter schools compare to their peers in traditional public schools? Which sector is getting the best results with this student group, which now includes one in six American students? And how have English Learners’ academic outcomes evolved in Texas",
     date: new Date(),
   },
   {
