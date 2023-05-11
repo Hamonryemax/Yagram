@@ -1,21 +1,8 @@
-/* .nameUser {
-  font-size: 14px;
-  background-color: black;
-} */
-
-/* .message {
-  background-color: #ffcc00;
-  font-size: 18px;
-  border-radius: 10px;
-  margin-bottom: 5px;
-  padding-left: 15px;
-} */
-
 .writeText {
   position: relative;
   width: 830px;
   height: 100px;
-  background-color: #d9d9d9;
+  background-color: #eeeeef;
   text-align: center;
   align-items: center;
   opacity: 80%;
@@ -35,16 +22,6 @@
   outline: none;
   transition: all 0.3s ease;
   overflow-y: auto;
-}
-
-.text:focus {
-  border-color: #fc3f1e;
-  box-shadow: 0 0 8px rgba(26, 115, 232, 0.4);
-}
-
-.text::placeholder {
-  color: #c1c1c1;
-  font-size: 16px;
 }
 
 .containerForInput {
@@ -72,6 +49,52 @@
   color: rgb(255, 255, 255);
 }
 
+.messageText {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.messageOuter {
+  display: flex;
+  /* background-color: #fc3f1e; */
+  margin-bottom: -12px;
+}
+
+.messageOuterOwner {
+  display: flex;
+  /* background-color: #831401; */
+  margin-bottom: -12px;
+}
+
+.messageAvatar {
+  /* background-color: rgb(255, 213, 0); */
+  padding-left: 6px;
+  padding-right: 8px;
+}
+
+.messageAvatarOwner {
+  /* background-color: rgb(102, 85, 1); */
+  padding-left: 6px;
+  padding-right: 8px;
+}
+
+.messageInner {
+  flex: 1;
+  display: flex;
+  flex-direction: row-reverse;
+  /* background-color: rgb(17, 255, 0); */
+}
+
+.messageInnerOwner {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  /* background-color: rgb(5, 73, 0); */
+}
+
 .messageBubble {
   display: block;
   max-width: 70%;
@@ -83,29 +106,69 @@
   padding: 10px 15px;
   position: relative;
   margin-bottom: 20px;
+  overflow-wrap: break-word;
 }
 
-.message-sender img {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+.messageBubbleOwner {
+  display: block;
+  max-width: 70%;
+  background-color: rgb(33 33 33);
+  color: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #cccccc;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+  position: relative;
+  margin-bottom: 20px;
+  overflow-wrap: break-word;
 }
 
-.messageText {
-  font-size: 14px;
-  line-height: 1.4;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
-.messageTime {
-  position: absolute;
-  font-size: 12px;
-  margin-top: 5px;
-  bottom: 2px;
-  right: 10px;
+.messageActions {
+  /* background-color: rgb(13, 0, 255); */
+  width: 67px;
+  padding-right: 5px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.messageBubble_owner {
-  background-color: aquamarine;
+.messageActionsOwner {
+  /* background-color: rgb(5, 1, 79); */
+  width: 67px;
+  padding-right: 5px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.messageSpacer {
+  /* background-color: rgb(255, 0, 242); */
+  flex: 1;
+}
+
+.messageSpacerOwner {
+  /* background-color: rgb(75, 0, 71); */
+  flex: 1;
+}
+
+.messageStatus {
+  /* background-color: rgb(0, 242, 255); */
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.messageStatusOwner {
+  /* background-color: rgb(0, 74, 78); */
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
