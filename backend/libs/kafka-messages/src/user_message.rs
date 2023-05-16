@@ -24,6 +24,10 @@ impl UserMessage {
             text: data.text,
         }
     }
+
+    pub fn key(&self) -> String {
+        format!("for_user_{}", self.receiver_id)
+    }
 }
 
 impl From<UserMessage> for KafkaMessage {

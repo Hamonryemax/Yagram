@@ -2,6 +2,7 @@ mod server;
 mod session;
 
 use actix::Actor;
+use actix_web::http::header;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
@@ -10,7 +11,14 @@ use crate::session::WsSession;
 
 async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
     println!("Handle WS connection");
-    let resp = ws::start(WsSession {}, &req, stream);
+    let headers = req.headers();
+    let user_id = headers
+        .get("user-id")
+        .expect("Expected user-id header")
+        .to_str()
+        .unwrap()
+        .to_string();
+    let resp = ws::start(WsSession::new(user_id), &req, stream);
     resp
 }
 

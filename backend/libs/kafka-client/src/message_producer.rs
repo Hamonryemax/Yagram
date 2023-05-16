@@ -9,7 +9,6 @@ use std::time::Duration;
 #[derive(Clone)]
 pub struct MessageProducer {
     pub producer: FutureProducer,
-    counter: u8,
 }
 
 impl MessageProducer {
@@ -22,18 +21,19 @@ impl MessageProducer {
             .create()
             .expect("Producer creation error");
 
-        MessageProducer {
-            producer,
-            counter: 0,
-        }
+        MessageProducer { producer }
     }
 
-    pub async fn produce(&mut self, topic_name: &str, message: String) -> OwnedDeliveryResult {
-        self.counter = (self.counter + 1) % 5;
-        let key = &format!("Key {}", self.counter);
-        let record = FutureRecord::to(topic_name)
-            .payload(message.to_bytes())
-            .key(key);
+    pub async fn produce(
+        &mut self,
+        topic_name: &str,
+        message: String,
+        key: Option<String>,
+    ) -> OwnedDeliveryResult {
+        let mut record = FutureRecord::to(topic_name).payload(message.to_bytes());
+        if let Some(k) = key.as_ref() {
+            record = record.key(k);
+        }
         self.producer.send(record, Duration::from_secs(0)).await
     }
 }

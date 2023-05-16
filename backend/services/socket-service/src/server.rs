@@ -18,22 +18,6 @@ impl Default for WsServer {
     }
 }
 
-// impl WsServer {
-//     fn send_to_kafka<Message: Serialize>(&self, msg: Message, ctx: &mut Context<Self>) {
-//         let mut producer = self.message_producer.clone();
-//         let fut = Box::pin(async move {
-//             let message = json!(msg);
-//             let result = producer.produce("messages", message.to_string()).await;
-//             match result {
-//                 Ok(_) => {}
-//                 Err(e) => println!("{:?}", e),
-//             }
-//         });
-//         let fut_actor = fut.into_actor(self);
-//         ctx.spawn(fut_actor);
-//     }
-// }
-
 impl Actor for WsServer {
     type Context = Context<Self>;
 
@@ -52,13 +36,14 @@ impl Handler<StatusMessage> for WsServer {
             let serialized_message = json!(kafka_message);
             println!("Sending = {}", serialized_message.to_string());
             let result = producer
-                .produce("messages", serialized_message.to_string())
+                .produce("messages", serialized_message.to_string(), None)
                 .await;
             match result {
                 Ok(_) => {}
                 Err(e) => println!("{:?}", e),
             }
         });
+
         let fut_actor = fut.into_actor(self);
         ctx.spawn(fut_actor);
     }
@@ -70,10 +55,11 @@ impl Handler<UserMessage> for WsServer {
     fn handle(&mut self, msg: UserMessage, ctx: &mut Self::Context) -> Self::Result {
         let mut producer = self.message_producer.clone();
         let fut = Box::pin(async move {
+            let key = msg.key();
             let kafka_message = KafkaMessage::from(msg);
             let serialized_message = json!(kafka_message);
             let result = producer
-                .produce("messages", serialized_message.to_string())
+                .produce("messages", serialized_message.to_string(), Some(key))
                 .await;
             match result {
                 Ok(_) => {}
